@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+export default function handler(req, res) {
   const state = {
     Julen: { count: 0 },
     Marsi: { count: 0 },
