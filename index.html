@@ -56,36 +56,29 @@
     </div>
 
     <script>
-        // Función para obtener los datos desde el servidor
         const fetchData = async () => {
             const response = await fetch('/api/state');
             if (!response.ok) {
+                console.error("Error al cargar los datos:", response.statusText);
                 alert("No se pudieron cargar los datos.");
                 return [];
             }
-            return await response.json();
+            return response.json();
         };
 
-        // Función para actualizar el contador
         const updateState = async (name) => {
             const response = await fetch('/api/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name })
             });
-
             const data = await response.json();
-            if (response.ok) {
-                // Si la actualización fue exitosa, actualizamos el contador en la UI
-                const counterSpan = document.getElementById(`counter-${name}`);
-                counterSpan.textContent = data.count; // Actualiza el contador con el valor más reciente
-            } else {
-                // Si ocurre un error, mostramos un mensaje
-                alert(data.error);
+            if (!response.ok) {
+                alert(data.error || "Error al actualizar el contador.");
             }
+            render();
         };
 
-        // Función para crear las filas con nombre y contador
         const createRow = (name, count) => {
             const row = document.createElement("div");
             row.className = "name-row";
@@ -95,11 +88,11 @@
 
             const counterSpan = document.createElement("span");
             counterSpan.textContent = count;
-            counterSpan.id = `counter-${name}`; // Aseguramos que cada contador tiene un ID único
+            counterSpan.id = `counter-${name}`;
 
             const incrementButton = document.createElement("button");
             incrementButton.textContent = "+";
-            incrementButton.onclick = () => updateState(name); // Llamamos a la función para actualizar el contador
+            incrementButton.onclick = () => updateState(name);
 
             row.appendChild(nameSpan);
             row.appendChild(counterSpan);
@@ -108,22 +101,17 @@
             return row;
         };
 
-        // Función para renderizar la lista de contadores
         const render = async () => {
             const container = document.getElementById("names");
-            container.innerHTML = ""; // Limpiar la pantalla antes de agregar nuevos contadores
+            container.innerHTML = "";
 
-            const data = await fetchData(); // Obtener los datos del backend
-            if (data.length === 0) return;
-
-            // Para cada contador, creamos una fila
+            const data = await fetchData();
             data.forEach(({ name, count }) => {
                 const row = createRow(name, count);
                 container.appendChild(row);
             });
         };
 
-        // Iniciamos la renderización de los contadores
         render();
     </script>
 </body>
