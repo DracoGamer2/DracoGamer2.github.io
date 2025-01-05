@@ -1,11 +1,11 @@
 {
-  "Julen": { "count": 0 },
-  "Marsi": { "count": 0 },
-  "Pitu": { "count": 0 },
-  "Unax": { "count": 0 },
-  "Aratz A": { "count": 0 },
-  "Aratz E": { "count": 0 },
-  "Enaitz": { "count": 0 },
-  "Aimar": { "count": 0 },
-  "Eneko": { "count": 0 }
+  "Julen": 0,
+  "Marsi": 0,
+  "Pitu": 0,
+  "Unax": 0,
+  "Aratz A": 0,
+  "Aratz E": 0,
+  "Enaitz": 0,
+  "Aimar": 0,
+  "Eneko": 0
 }
