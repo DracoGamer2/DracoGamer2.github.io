@@ -1,13 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
 
-module.exports = async (req, res) => {
-    const stateFilePath = path.join(__dirname, '../../state.json');
-    
-    try {
-        const data = fs.readFileSync(stateFilePath, 'utf8');
-        res.status(200).json(JSON.parse(data));
-    } catch (err) {
-        res.status(500).json({ error: 'No se pudo leer el archivo de estado.' });
-    }
-};
+export default async function handler(req, res) {
+  try {
+    // Leer el archivo state.json
+    const data = JSON.parse(fs.readFileSync('./state.json', 'utf-8'));
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'No se pudieron cargar los datos.' });
+  }
+}
