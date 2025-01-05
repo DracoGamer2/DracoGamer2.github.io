@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { name } = req.body;
@@ -12,10 +9,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Nombre no válido' });
         }
 
-        // Obtener el tiempo actual
         const currentTime = Date.now();
-
-        // Comprobar si ha pasado más de 10 horas desde la última actualización
         const lastUpdate = data[name].lastUpdate || 0;
         const tenHoursInMs = 10 * 60 * 60 * 1000;
 
@@ -25,12 +19,12 @@ export default async function handler(req, res) {
 
         // Incrementar el contador
         data[name].count++;
-        data[name].lastUpdate = currentTime; // Actualizamos el tiempo de la última actualización
+        data[name].lastUpdate = currentTime;
 
         // Guardar el estado actualizado
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, name, count: data[name].count }); // Añadir el nuevo contador en la respuesta
     } else {
         res.status(405).json({ error: 'Método no permitido' });
     }
