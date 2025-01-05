@@ -1,125 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contadores por Nombre</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f5f5f5;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-    }
-    .name-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-    .name-row span {
-      flex: 1;
-    }
-    button {
-      margin: 0 5px;
-      padding: 10px 20px;
-      border: none;
-      background-color: #007BFF;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contadores por Nombre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .name-row span {
+            flex: 1;
+        }
+        button {
+            margin: 0 5px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Contadores</h1>
-    <div id="names"></div>
-  </div>
+    <div class="container">
+        <h1>Contadores</h1>
+        <div id="names"></div>
+    </div>
 
-  <script>
-    const fetchData = async () => {
-      const response = await fetch('/api/state');
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('No se pudieron cargar los datos');
-      }
-    };
+    <script>
+        const state = {
+            Julen: 0,
+            Marsi: 0,
+            Pitu: 0,
+            Unax: 0,
+            "Aratz A": 0,
+            "Aratz E": 0,
+            Enaitz: 0,
+            Aimar: 0,
+            Eneko: 0
+        };
 
-    const updateState = async (name) => {
-      const response = await fetch('/api/update', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
-      });
-      if (response.ok) {
-        render();  // Vuelve a cargar los contadores después de la actualización
-      } else {
-        const data = await response.json();
-        alert(data.error);
-      }
-    };
+        // Función para actualizar el archivo JSON
+        const updateState = async (name) => {
+            state[name]++;
+            await fetch('/api/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, count: state[name] })
+            });
 
-    const createRow = (name, count) => {
-      const row = document.createElement("div");
-      row.className = "name-row";
+            render();
+            closeWindow();
+        };
 
-      const nameSpan = document.createElement("span");
-      nameSpan.textContent = name;
+        // Crear la fila para cada persona
+        const createRow = (name) => {
+            const row = document.createElement('div');
+            row.className = 'name-row';
 
-      const counterSpan = document.createElement("span");
-      counterSpan.textContent = count;
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = name;
 
-      const incrementButton = document.createElement("button");
-      incrementButton.textContent = "+";
-      incrementButton.onclick = async () => {
-        await updateState(name);
-      };
+            const counterSpan = document.createElement('span');
+            counterSpan.textContent = state[name];
 
-      row.appendChild(nameSpan);
-      row.appendChild(counterSpan);
-      row.appendChild(incrementButton);
+            const incrementButton = document.createElement('button');
+            incrementButton.textContent = '+';
+            incrementButton.onclick = () => updateState(name);
 
-      return row;
-    };
+            row.appendChild(nameSpan);
+            row.appendChild(counterSpan);
+            row.appendChild(incrementButton);
 
-    const render = async () => {
-      const container = document.getElementById("names");
-      container.innerHTML = "";
+            return row;
+        };
 
-      try {
-        const data = await fetchData();
-        Object.entries(data).forEach(([name, { count }]) => {
-          const row = createRow(name, count);
-          container.appendChild(row);
-        });
-      } catch (error) {
-        console.error('Error:', error);
-        const container = document.getElementById("names");
-        container.innerHTML = "<p>No se pudieron cargar los datos.</p>";
-      }
-    };
+        // Función para renderizar los contadores
+        const render = () => {
+            const container = document.getElementById('names');
+            container.innerHTML = '';
 
-    render();
-  </script>
+            Object.keys(state).forEach((name) => {
+                const row = createRow(name);
+                container.appendChild(row);
+            });
+        };
+
+        // Función para cerrar la ventana automáticamente
+        const closeWindow = () => {
+            window.close();
+        };
+
+        // Renderizar el estado inicial
+        render();
+    </script>
 </body>
 </html>
