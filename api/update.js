@@ -1,7 +1,10 @@
+import fs from 'fs';
+import path from 'path';
+
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { name } = req.body;
-
+        
         const filePath = path.join(process.cwd(), 'state.json');
         const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
@@ -17,14 +20,15 @@ export default async function handler(req, res) {
             return res.status(429).json({ error: 'Solo puedes sumar a este contador cada 10 horas.' });
         }
 
-        // Incrementar el contador
+        // Incrementamos el contador
         data[name].count++;
         data[name].lastUpdate = currentTime;
 
-        // Guardar el estado actualizado
+        // Guardamos el estado actualizado en el archivo JSON
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 
-        res.status(200).json({ success: true, name, count: data[name].count }); // Añadir el nuevo contador en la respuesta
+        // Devolvemos la respuesta con los datos actualizados
+        res.status(200).json({ success: true, name, count: data[name].count });
     } else {
         res.status(405).json({ error: 'Método no permitido' });
     }
