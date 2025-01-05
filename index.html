@@ -52,43 +52,21 @@
     </div>
 
     <script>
-        // Estado de los contadores inicial
-        let state = {};
-
-        // Función para obtener el estado de los contadores
-        const fetchState = async () => {
-            try {
-                const response = await fetch('/state.json');
-                if (!response.ok) {
-                    throw new Error('No se pudo obtener el estado');
-                }
-                const data = await response.json();
-                state = data;
-                render();
-            } catch (error) {
-                console.error('Error al cargar los datos:', error);
-                alert('No se pudieron cargar los datos.');
-            }
+        // Contadores iniciales
+        let state = {
+            "Julen": 0,
+            "Marsi": 0,
+            "Pitu": 0,
+            "Unax": 0,
+            "Aratz A": 0,
+            "Aratz E": 0,
+            "Enaitz": 0,
+            "Aimar": 0,
+            "Eneko": 0
         };
 
-        // Función para actualizar el contador en el archivo state.json
-        const updateState = async (name) => {
-            state[name]++;
-            try {
-                await fetch('/updateState.json', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(state)
-                });
-                render();
-                window.close(); // Cierra la pestaña automáticamente
-            } catch (error) {
-                console.error('Error al actualizar el contador:', error);
-            }
-        };
-
-        // Crear la fila para cada persona
-        const createRow = (name) => {
+        // Función para crear la fila con nombre y contador
+        const createRow = (name, count) => {
             const row = document.createElement('div');
             row.className = 'name-row';
 
@@ -96,11 +74,15 @@
             nameSpan.textContent = name;
 
             const counterSpan = document.createElement('span');
-            counterSpan.textContent = state[name];
+            counterSpan.textContent = count;
 
             const incrementButton = document.createElement('button');
             incrementButton.textContent = '+';
-            incrementButton.onclick = () => updateState(name);
+            incrementButton.onclick = () => {
+                state[name]++;
+                counterSpan.textContent = state[name];
+                saveState();  // Guardar el nuevo estado
+            };
 
             row.appendChild(nameSpan);
             row.appendChild(counterSpan);
@@ -109,19 +91,33 @@
             return row;
         };
 
+        // Guardar el estado en el localStorage (para persistencia en esta sesión)
+        const saveState = () => {
+            localStorage.setItem('state', JSON.stringify(state));
+        };
+
+        // Cargar el estado desde el localStorage (para restaurarlo cuando se recargue la página)
+        const loadState = () => {
+            const savedState = localStorage.getItem('state');
+            if (savedState) {
+                state = JSON.parse(savedState);
+            }
+        };
+
         // Función para renderizar los contadores en el DOM
         const render = () => {
             const container = document.getElementById('names');
             container.innerHTML = '';
 
             Object.keys(state).forEach((name) => {
-                const row = createRow(name);
+                const row = createRow(name, state[name]);
                 container.appendChild(row);
             });
         };
 
-        // Inicializar la carga de los datos
-        fetchState();
+        // Cargar el estado y renderizar los contadores al iniciar
+        loadState();
+        render();
     </script>
 </body>
 </html>
