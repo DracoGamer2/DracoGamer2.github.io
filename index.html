@@ -56,13 +56,17 @@
     </div>
 
     <script>
-        // Función para obtener los datos iniciales desde el backend
+        // Función para obtener los datos desde el servidor
         const fetchData = async () => {
             const response = await fetch('/api/state');
-            return response.json();
+            if (!response.ok) {
+                alert("No se pudieron cargar los datos.");
+                return [];
+            }
+            return await response.json();
         };
 
-        // Función para actualizar un contador
+        // Función para actualizar el contador
         const updateState = async (name) => {
             const response = await fetch('/api/update', {
                 method: 'POST',
@@ -72,16 +76,16 @@
 
             const data = await response.json();
             if (response.ok) {
-                // Si la respuesta es exitosa, actualizar el contador en la interfaz
+                // Si la actualización fue exitosa, actualizamos el contador en la UI
                 const counterSpan = document.getElementById(`counter-${name}`);
-                counterSpan.textContent = data.count; // Actualizar el contador con el nuevo valor
+                counterSpan.textContent = data.count; // Actualiza el contador con el valor más reciente
             } else {
-                // Mostrar mensaje de error
+                // Si ocurre un error, mostramos un mensaje
                 alert(data.error);
             }
         };
 
-        // Función para crear la fila de cada contador
+        // Función para crear las filas con nombre y contador
         const createRow = (name, count) => {
             const row = document.createElement("div");
             row.className = "name-row";
@@ -91,11 +95,11 @@
 
             const counterSpan = document.createElement("span");
             counterSpan.textContent = count;
-            counterSpan.id = `counter-${name}`; // Asignar ID para facilitar la actualización
+            counterSpan.id = `counter-${name}`; // Aseguramos que cada contador tiene un ID único
 
             const incrementButton = document.createElement("button");
             incrementButton.textContent = "+";
-            incrementButton.onclick = () => updateState(name); // Llamar a la función de actualización
+            incrementButton.onclick = () => updateState(name); // Llamamos a la función para actualizar el contador
 
             row.appendChild(nameSpan);
             row.appendChild(counterSpan);
@@ -104,19 +108,22 @@
             return row;
         };
 
-        // Función para renderizar los contadores
+        // Función para renderizar la lista de contadores
         const render = async () => {
             const container = document.getElementById("names");
-            container.innerHTML = ""; // Limpiar la pantalla antes de mostrar los nuevos contadores
+            container.innerHTML = ""; // Limpiar la pantalla antes de agregar nuevos contadores
 
-            const data = await fetchData(); // Obtener los datos de los contadores
+            const data = await fetchData(); // Obtener los datos del backend
+            if (data.length === 0) return;
+
+            // Para cada contador, creamos una fila
             data.forEach(({ name, count }) => {
-                const row = createRow(name, count); // Crear la fila para cada contador
-                container.appendChild(row); // Añadir la fila al contenedor
+                const row = createRow(name, count);
+                container.appendChild(row);
             });
         };
 
-        // Inicializar la renderización de los contadores
+        // Iniciamos la renderización de los contadores
         render();
     </script>
 </body>
