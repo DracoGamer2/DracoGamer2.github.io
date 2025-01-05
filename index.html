@@ -52,31 +52,39 @@
     </div>
 
     <script>
-        const state = {
-            Julen: 0,
-            Marsi: 0,
-            Pitu: 0,
-            Unax: 0,
-            "Aratz A": 0,
-            "Aratz E": 0,
-            Enaitz: 0,
-            Aimar: 0,
-            Eneko: 0
+        // Estado de los contadores inicial
+        let state = {};
+
+        // Función para obtener el estado de los contadores
+        const fetchState = async () => {
+            try {
+                const response = await fetch('/state.json');
+                if (!response.ok) {
+                    throw new Error('No se pudo obtener el estado');
+                }
+                const data = await response.json();
+                state = data;
+                render();
+            } catch (error) {
+                console.error('Error al cargar los datos:', error);
+                alert('No se pudieron cargar los datos.');
+            }
         };
 
-        // Función para actualizar el archivo JSON
+        // Función para actualizar el contador en el archivo state.json
         const updateState = async (name) => {
             state[name]++;
-            await fetch('/api/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, count: state[name] })
-            });
-
-            render();
-            closeWindow();
+            try {
+                await fetch('/updateState.json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state)
+                });
+                render();
+                window.close(); // Cierra la pestaña automáticamente
+            } catch (error) {
+                console.error('Error al actualizar el contador:', error);
+            }
         };
 
         // Crear la fila para cada persona
@@ -101,7 +109,7 @@
             return row;
         };
 
-        // Función para renderizar los contadores
+        // Función para renderizar los contadores en el DOM
         const render = () => {
             const container = document.getElementById('names');
             container.innerHTML = '';
@@ -112,13 +120,8 @@
             });
         };
 
-        // Función para cerrar la ventana automáticamente
-        const closeWindow = () => {
-            window.close();
-        };
-
-        // Renderizar el estado inicial
-        render();
+        // Inicializar la carga de los datos
+        fetchState();
     </script>
 </body>
 </html>
