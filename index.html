@@ -58,7 +58,11 @@
   <script>
     const fetchData = async () => {
       const response = await fetch('/api/state');
-      return response.json();
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('No se pudieron cargar los datos');
+      }
     };
 
     const updateState = async (name) => {
@@ -67,11 +71,12 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name })
       });
-      const data = await response.json();
-      if (!response.ok) {
+      if (response.ok) {
+        render();  // Vuelve a cargar los contadores después de la actualización
+      } else {
+        const data = await response.json();
         alert(data.error);
       }
-      render();
     };
 
     const createRow = (name, count) => {
@@ -101,11 +106,17 @@
       const container = document.getElementById("names");
       container.innerHTML = "";
 
-      const data = await fetchData();
-      data.forEach(({ name, count }) => {
-        const row = createRow(name, count);
-        container.appendChild(row);
-      });
+      try {
+        const data = await fetchData();
+        Object.entries(data).forEach(([name, { count }]) => {
+          const row = createRow(name, count);
+          container.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error:', error);
+        const container = document.getElementById("names");
+        container.innerHTML = "<p>No se pudieron cargar los datos.</p>";
+      }
     };
 
     render();
