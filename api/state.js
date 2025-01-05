@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Contenido en memoria, simulando el archivo JSON
   const state = {
     Julen: { count: 0 },
     Marsi: { count: 0 },
@@ -13,7 +12,6 @@ export default async function handler(req, res) {
   };
 
   if (req.method === "GET") {
-    // Devolver el estado actual
     return res.status(200).json(state);
   } else {
     return res.status(405).json({ error: "Método no permitido" });
