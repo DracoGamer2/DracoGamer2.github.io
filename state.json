@@ -1,11 +1,11 @@
 {
-  "Julen": { "count": 2, "lastUpdate": 1673030400000 },
-  "Marsi": { "count": 4, "lastUpdate": 1673116800000 },
-  "Pitu": { "count": 4, "lastUpdate": 1673030400000 },
+  "Julen": { "count": 2, "lastUpdate": 0 },
+  "Marsi": { "count": 4, "lastUpdate": 0 },
+  "Pitu": { "count": 4, "lastUpdate": 0 },
   "Unax": { "count": 0, "lastUpdate": 0 },
-  "Aratz A": { "count": 1, "lastUpdate": 1673030400000 },
-  "Aratz E": { "count": 3, "lastUpdate": 1673030400000 },
+  "Aratz A": { "count": 1, "lastUpdate": 0 },
+  "Aratz E": { "count": 3, "lastUpdate": 0 },
   "Enaitz": { "count": 0, "lastUpdate": 0 },
-  "Aimar": { "count": 2, "lastUpdate": 1673030400000 },
+  "Aimar": { "count": 2, "lastUpdate": 0 },
   "Eneko": { "count": 0, "lastUpdate": 0 }
 }
